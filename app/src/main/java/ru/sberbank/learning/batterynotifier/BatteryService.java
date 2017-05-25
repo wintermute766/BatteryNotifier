@@ -16,6 +16,8 @@ public class BatteryService extends Service {
 
     private static final int CRITICAL_BATTERY_LEVEL = 15;
 
+    private boolean showNotifications = true;
+
     private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -28,23 +30,32 @@ public class BatteryService extends Service {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
             if (percent < CRITICAL_BATTERY_LEVEL) {
-                Notification.Builder builder = new Notification.Builder(BatteryService.this);
-                builder.setSmallIcon(R.drawable.ic_stat_battery_low);
-                builder.setContentTitle(getString(R.string.warning_battery_low));
+                if (showNotifications) {
+                    Notification.Builder builder = new Notification.Builder(BatteryService.this);
+                    builder.setSmallIcon(R.drawable.ic_stat_battery_low);
+                    builder.setContentTitle(getString(R.string.warning_battery_low));
 
-                Intent startBattery = new Intent();
-                startBattery.setComponent(
-                        new ComponentName("ru.sberbank.learning.battery", "ru.sberbank.learning.battery.MainActivity"));
-                startBattery.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Intent startBattery = new Intent();
+                    startBattery.setComponent(
+                            new ComponentName("ru.sberbank.learning.battery", "ru.sberbank.learning.battery.MainActivity"));
+                    startBattery.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                builder.setContentIntent(PendingIntent
-                        .getActivity(BatteryService.this, 0, startBattery, PendingIntent.FLAG_CANCEL_CURRENT));
+                    builder.setContentIntent(PendingIntent
+                            .getActivity(BatteryService.this, 0, startBattery, PendingIntent.FLAG_CANCEL_CURRENT));
 
-                Notification notification = builder.getNotification();
 
-                nm.notify(R.string.warning_battery_low, notification);
+                    Intent startSelf = new Intent(BatteryService.this, BatteryService.class);
+                    startSelf.setAction(Intent.ACTION_DELETE);
+                    builder.setDeleteIntent(PendingIntent
+                            .getService(BatteryService.this, 0, startSelf, PendingIntent.FLAG_CANCEL_CURRENT));
+
+                    Notification notification = builder.getNotification();
+
+                    nm.notify(R.string.warning_battery_low, notification);
+                }
             } else {
                 nm.cancel(R.string.warning_battery_low);
+                showNotifications = true;
             }
         }
     };
@@ -67,6 +78,11 @@ public class BatteryService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (intent != null && Intent.ACTION_DELETE.equals(intent.getAction())) {
+            showNotifications = false;
+        }
+
         return START_STICKY;
     }
 
