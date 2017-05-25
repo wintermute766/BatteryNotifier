@@ -90,5 +90,8 @@ public class BatteryService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(batteryReceiver);
+        
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.cancelAll();
     }
 }
