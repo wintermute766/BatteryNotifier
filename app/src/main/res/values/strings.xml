@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BatteryNotifier</string>
+    <string name="batter_service_label">Сервис батареи</string>
+    <string name="batter_service_description">Оповещает о низком заряде батареи</string>
+    <string name="warning_battery_low">Низкий заряд батареи</string>
+    <string name="start_service">Запустить сервис</string>
+</resources>
