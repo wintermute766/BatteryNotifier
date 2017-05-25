@@ -32,9 +32,9 @@ public class BatteryService extends Service {
                 builder.setSmallIcon(R.drawable.ic_stat_battery_low);
                 builder.setContentTitle(getString(R.string.warning_battery_low));
 
-                Intent startBattery = new Intent(BatteryService.this, MainActivity.class);
-//                startBattery.setComponent(
-//                        new ComponentName("ru.sberbank.learning.battery", "MainActivity"));
+                Intent startBattery = new Intent();
+                startBattery.setComponent(
+                        new ComponentName("ru.sberbank.learning.battery", "ru.sberbank.learning.battery.MainActivity"));
                 startBattery.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 builder.setContentIntent(PendingIntent
