@@ -2,8 +2,10 @@ package ru.sberbank.learning.batterynotifier;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,14 +25,26 @@ public class BatteryService extends Service {
             float fPercent = ((float) level / (float) capacity) * 100f;
             int percent = Math.round(fPercent);
 
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
             if (percent < CRITICAL_BATTERY_LEVEL) {
                 Notification.Builder builder = new Notification.Builder(BatteryService.this);
                 builder.setSmallIcon(R.drawable.ic_stat_battery_low);
                 builder.setContentTitle(getString(R.string.warning_battery_low));
+
+                Intent startBattery = new Intent(BatteryService.this, MainActivity.class);
+//                startBattery.setComponent(
+//                        new ComponentName("ru.sberbank.learning.battery", "MainActivity"));
+                startBattery.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                builder.setContentIntent(PendingIntent
+                        .getActivity(BatteryService.this, 0, startBattery, PendingIntent.FLAG_CANCEL_CURRENT));
+
                 Notification notification = builder.getNotification();
 
-                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 nm.notify(R.string.warning_battery_low, notification);
+            } else {
+                nm.cancel(R.string.warning_battery_low);
             }
         }
     };
